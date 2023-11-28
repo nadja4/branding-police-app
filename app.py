@@ -3,7 +3,7 @@ import os
 from flask import (Flask, redirect, render_template, request,
                    send_from_directory, url_for)
 
-from azure.identity import ClientSecretCredential
+from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 
@@ -17,11 +17,7 @@ tenant_id = os.environ['AZURE_TENANT_ID']
 client_secret = os.environ['AZURE_CLIENT_SECRET']
 account_url = os.environ["AZURE_STORAGE_URL"]
 
-credentials = ClientSecretCredential(
-    client_id = client_id, 
-    client_secret= client_secret,
-    tenant_id= tenant_id
-)
+credentials = DefaultAzureCredential()
 
 def get_blob_data():
     container_name = os.environ['AZURE_CONTAINER_NAME']
