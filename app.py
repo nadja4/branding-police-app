@@ -11,6 +11,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
+account_url = "https://sabrandingpoliceapp.blob.core.windows.net/"
+
 credentials = DefaultAzureCredential()
 
 def get_blob_data():
