@@ -11,12 +11,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-### Blob storage
-client_id = os.environ['AZURE_CLIENT_ID']
-tenant_id = os.environ['AZURE_TENANT_ID']
-client_secret = os.environ['AZURE_CLIENT_SECRET']
-account_url = os.environ["AZURE_STORAGE_URL"]
-
 credentials = DefaultAzureCredential()
 
 def get_blob_data():
