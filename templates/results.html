@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Suchergebnisse</title>
+    <!-- Bootstrap CSS einbinden -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Suchergebnisse</h1>
+        <!-- Tabelle für die Anzeige der Ergebnisse -->
+        {% if message %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Falscher Name</th>
+                        <th scope="col">Richtiger Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Iterieren durch das Dictionary und jede Korrektur in einer eigenen Zeile anzeigen -->
+                    {% for fake, real in message.items() %}
+                        <tr>
+                            <td>{{ fake }}</td>
+                            <td>{{ real }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Keine falschen Markennamen gefunden.</p>
+        {% endif %}
+<!-- Fügen Sie dies in Ihre results.html ein, um den Download zu ermöglichen -->
+{% if message %}
+    ...
+    <form action="/download_results" method="post">
+        <input type="hidden" name="filename" value="{{ filename }}"> <!-- Sie müssen sicherstellen, dass die 'filename' Variable im Kontext verfügbar ist -->
+        <button type="submit" class="btn btn-primary">Ergebnisse herunterladen</button>
+    </form>
+{% endif %}
+
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery zuerst, dann Popper.js, dann Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.9/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

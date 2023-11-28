@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In pptx Markennamen Überprüfung für Projektlabor PII</title>
+    <!-- Einbinden des Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 50px;
+        }
+        .container {
+            width: 400px;
+            margin: auto;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        /* Stil für das Lade-GIF */
+        #loading-gif {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mb-4"> PowerPoint Markennamen Überprüfung für Projektlabor PII</h2>
+<!-- In Ihrer upload.html Datei -->
+<!-- In Ihrer upload.html Datei -->
+        <form id="upload-form" action="/" method="post" enctype="multipart/form-data" class="mb-3">
+            <!-- Aktualisieren Sie den 'accept'-Attribut um .pptx Dateien zu akzeptieren -->
+            <input type="file" name="file" accept=".pptx" required>
+            <button type="submit" class="btn btn-primary">Hochladen und Analysieren</button>
+        </form>
+
+
+        <!-- Lade-GIF -->
+        <img id="loading-gif" src="{{ url_for('static', filename='images/scan.gif') }}">
+        <!-- Nachrichten-Bereich -->
+        {% if message %}
+            <div class="alert alert-info">{{ message|safe }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery zuerst, dann Popper.js, dann Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.9/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // JavaScript für das Einblenden des Lade-GIFs
+        document.getElementById('upload-form').addEventListener('submit', function(){
+            document.getElementById('loading-gif').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
