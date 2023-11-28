@@ -27,6 +27,16 @@ def hello():
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
+@app.route('/results', methods=['POST'])
+def results():
+   print('Request for results page received')
+   return render_template('results.html')
+
+   
+@app.route('/upload', methods=['POST'])
+def upload():
+   print('Request for upload page received')
+   return render_template('upload.html')
 
 if __name__ == '__main__':
    app.run()
