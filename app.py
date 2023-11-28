@@ -77,18 +77,17 @@ def upload_blob(file):
    blob_client = container_client.upload_blob(name=file.filename, data=data, overwrite=True)
 
    # Upload results_xx.txt
-   filename = "result_" + file.filename.split('.')[0] + ".txt"
-   path_to_file = os.path.join(".\input", filename)
-   print(path_to_file)
-   f = open(path_to_file, "w")
-   f.write("Working on " + file.filename)
-   f.close()
+   results_filename = "result_" + file.filename.split('.')[0] + ".txt"
+   results_f = open(results_filename, "w")
+   results_f.write("Working on " + file.filename)
+   results_f.close()
 
    #open and read the file after the overwriting:
-   f = open(path_to_file, "r")
-   data = f.read()
-   blob_client = container_client.upload_blob(name=filename, data=data, overwrite=True)
-   f.close()
+   results_f = open(results_filename, "r")
+   data = results_f.read()
+   blob_client = container_client.upload_blob(name=results_filename, data=data, overwrite=True)
+   results_f.close()
+   os.remove(results_filename)
 
 
 @app.route('/')
