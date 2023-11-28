@@ -1,60 +1,22 @@
-<!DOCTYPE html>
-<html lang="de">
+<!doctype html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Suchergebnisse</title>
-    <!-- Bootstrap CSS einbinden -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            padding-top: 20px;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-        }
-    </style>
+    <title>Hello Azure - Python Quickstart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
 </head>
+<html>
+
 <body>
-    <div class="container">
-        <h1 class="mb-4">Suchergebnisse</h1>
-        <!-- Tabelle für die Anzeige der Ergebnisse -->
-        {% if message %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Falscher Name</th>
-                        <th scope="col">Richtiger Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Iterieren durch das Dictionary und jede Korrektur in einer eigenen Zeile anzeigen -->
-                    {% for fake, real in message.items() %}
-                        <tr>
-                            <td>{{ fake }}</td>
-                            <td>{{ real }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>Keine falschen Markennamen gefunden.</p>
-        {% endif %}
-<!-- Fügen Sie dies in Ihre results.html ein, um den Download zu ermöglichen -->
-{% if message %}
-    ...
-    <form action="/download_results" method="post">
-        <input type="hidden" name="filename" value="{{ filename }}"> <!-- Sie müssen sicherstellen, dass die 'filename' Variable im Kontext verfügbar ist -->
-        <button type="submit" class="btn btn-primary">Ergebnisse herunterladen</button>
-    </form>
-{% endif %}
-
-    </div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery zuerst, dann Popper.js, dann Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.9/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <main>
+        <div class="px-4 py-3 my-2 text-center">
+            <!-- <img  src="/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+            <h1 class="display-6 fw-bold">Die Suchergebnisse sind unter folgendem Link zu finden:</h1>
+            <p class="fs-5">
+                {{link}}
+            </p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-4 gap-3">Zurück zum Start</a>
+        </div>
+    </main>
 </body>
+
 </html>

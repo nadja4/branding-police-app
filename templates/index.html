@@ -1,7 +1,7 @@
 <!doctype html>
 
 <head>
-  <title>Hello Azure - Python Quickstart</title>
+  <title>Branding Police App</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
@@ -15,17 +15,18 @@
       <!-- <img  src="/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
       <h1 class="display-6 fw-bold text-primary">Branding-Police-App</h1>
     </div>
-    <form method="post" action="{{url_for('hello')}}">
+    <form action="{{url_for('upload_file')}}" method="POST" enctype="multipart/form-data">
       <div class="col-md-6 mx-auto text-center">
-        <label for="name" class="form-label fw-bold fs-5">Bitte füge hier die zu überprüfende PowerPoint Datei
+        <label for="file" class="form-label fw-bold fs-5">Bitte füge hier die zu überprüfende PowerPoint Datei
           ein:</label>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center align-items-center my-1">
-          <input type="file" class="form-control" id="name" name="name" accept=".pptx" required>
+          <input type="file" class="form-control" id="file" name="file" accept=".pptx" required>
         </div>
-        <label for="name" class="form-label fw-bold fs-5">Bitte gib hier den Begriff ein, nach dem gesucht werden soll:
+        <label for="search-string" class="form-label fw-bold fs-5">Bitte gib hier den Begriff ein, nach dem gesucht
+          werden soll:
         </label>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center align-items-center my-1">
-          <input type="text" class="form-control" id="name" name="name" accept=".pptx" required>
+          <input type="text" class="form-control" id="search-string" name="search-string" required>
         </div>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-2">
           <button type="submit" class="btn btn-primary btn-lg px-4 gap-3">Hochladen und Analysieren</button>
