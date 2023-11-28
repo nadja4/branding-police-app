@@ -12,11 +12,11 @@ load_dotenv()
 app = Flask(__name__)
 
 account_url = "https://sabrandingpoliceapp.blob.core.windows.net/"
+container_name = "container-branding-police-app"
 
 credentials = DefaultAzureCredential()
 
 def get_blob_data():
-    container_name = os.environ['AZURE_CONTAINER_NAME']
     blob_name = 'sample3.txt'
 
     # set client to access azure storage container
@@ -33,7 +33,6 @@ def get_blob_data():
     print(data)
 
 def list_blob():
-    container_name = os.environ['AZURE_CONTAINER_NAME']
 
     # set client to access azure storage container
     blob_service_client = BlobServiceClient(account_url= account_url, credential= credentials)
@@ -46,7 +45,6 @@ def list_blob():
 
 
 def get_multi_blob_data():
-    container_name = os.environ['AZURE_CONTAINER_NAME']
 
     # set client to access azure storage container
     blob_service_client = BlobServiceClient(account_url= account_url, credential= credentials)
@@ -60,7 +58,6 @@ def get_multi_blob_data():
         print(data.decode("utf-8"))
 
 def upload_blob(file):
-   container_name = os.environ['AZURE_CONTAINER_NAME']
    blob_service_client = BlobServiceClient(account_url= account_url, credential= credentials)
    container_client = blob_service_client.get_container_client(container=container_name)
 
