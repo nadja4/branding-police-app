@@ -5,8 +5,10 @@ from flask import (Flask, redirect, render_template, request,
 
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
-from azure.storage.queue import QueueServiceClient
+from azure.storage.queue import QueueServiceClient, BinaryBase64EncodePolicy, BinaryBase64DecodePolicy
 from datetime import datetime, timedelta
+
+import json
 
 from dotenv import load_dotenv
 
@@ -21,47 +23,6 @@ account_url_queue = "https://sabrandingpoliceapp.queue.core.windows.net/"
 queue_name = 'queue-branding-police-app'
 
 credentials = DefaultAzureCredential()
-
-def get_blob_data():
-    blob_name = 'sample3.txt'
-
-    # set client to access azure storage container
-    blob_service_client = BlobServiceClient(account_url= account_url_blob, credential= credentials)
-
-    # get the container client 
-    container_client = blob_service_client.get_container_client(container=container_name)
-
-    # download blob data 
-    blob_client = container_client.get_blob_client(blob= blob_name)
-
-    data = blob_client.download_blob().readall().decode("utf-8")
-
-    print(data)
-
-def list_blob():
-
-    # set client to access azure storage container
-    blob_service_client = BlobServiceClient(account_url= account_url_blob, credential= credentials)
-
-    # get the container client 
-    container_client = blob_service_client.get_container_client(container=container_name)
-
-    for blob in container_client.list_blobs():
-        print(blob.name)
-
-
-def get_multi_blob_data():
-
-    # set client to access azure storage container
-    blob_service_client = BlobServiceClient(account_url= account_url_blob, credential= credentials)
-
-    # get the container client 
-    container_client = blob_service_client.get_container_client(container=container_name)
-
-    for blob in container_client.list_blobs():
-        blob_client = container_client.get_blob_client(blob= blob.name)
-        data = blob_client.download_blob().readall()
-        print(data.decode("utf-8"))
 
 def upload_blob(file):
    blob_service_client = BlobServiceClient(account_url= account_url_blob, credential= credentials)
@@ -87,8 +48,6 @@ def upload_blob(file):
    os.remove(results_filename)
    return file_urls
 
-
-
 def get_sas_url():
     # set client to access azure storage container
     blob_service_client = BlobServiceClient(account_url=account_url_queue, credential=credentials)
@@ -112,8 +71,20 @@ def queue(queue_content):
     queue_service_client = QueueServiceClient(account_url=account_url_queue, credential=credentials)
     queue_client = queue_service_client.get_queue_client(queue_name)
 
-    for element in queue_content:
-        queue_client.send_message(element)
+    # Setup Base64 encoding and decoding functions
+    # This is necessary because of a bug in azure functions (see https://stackoverflow.com/questions/24524266/putting-message-into-azure-queue)
+    queue_client.message_encode_policy = BinaryBase64EncodePolicy()
+    queue_client.message_decode_policy = BinaryBase64DecodePolicy()
+    
+    message = {
+        'search-string': queue_content[2],
+        'results_url' : queue_content[1],
+        'powerpoint_url' : queue_content[0]
+    }
+    
+    message_string = json.dumps(message)
+    message_bytes = message_string.encode('utf-8')
+    queue_client.send_message(queue_client.message_encode_policy.encode(content=message_bytes))
 
 
 
@@ -138,7 +109,7 @@ def upload_file():
    queue_content.append(search_for)
    queue(queue_content)
    print('Sent to queue')
-   link = "testlink"
+   link = file_urls[1]
    return render_template('results.html', link=link)
 
 @app.route('/results', methods = ['GET'])
