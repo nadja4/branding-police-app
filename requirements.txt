@@ -3,4 +3,5 @@ Werkzeug==2.3.7
 gunicorn
 azure-identity
 azure-storage-blob
+azure-storage-queue
 python-dotenv
