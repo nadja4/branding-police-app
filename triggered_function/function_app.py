@@ -71,7 +71,7 @@ def analyze_powerpoint(powerpoint_def, search_string):
                     lines = text.split("\n")
                     for line in lines:
                         if search_string in line:
-                            text_with_slide = "Slide " + str(i) + ":     " + line + "\n"
+                            text_with_slide = "Slide " + str(i+1) + ":     " + line + "\n"
                             results.append(text_with_slide)                  
 
     if len(results) == 1:
