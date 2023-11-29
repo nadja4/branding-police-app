@@ -46,7 +46,7 @@ def upload_blob(file):
    file_urls.append(blob_client.url)
    results_f.close()
    os.remove(results_filename)
-   return file_urls
+   return file_urls, results_filename
 
 def request_user_delegation_key(blob_service_client, start_time, expiry_time):
     return blob_service_client.get_user_delegation_key(key_start_time=start_time,key_expiry_time=expiry_time)
@@ -71,17 +71,15 @@ def create_user_delegation_sas_blob(blob_service_client, blob_client):
 
     return sas_token
 
-
-def get_sas_url():
+def get_sas_url(filename):
     # set client to access azure storage container
     blob_service_client = BlobServiceClient(account_url=account_url_blob, credential=credentials)
 
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob="results_test_ppt.txt")
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=filename)
     sas_token = create_user_delegation_sas_blob(blob_service_client, blob_client)      
     # The SAS token string can be appended to the resource URL with a ? delimiter
     # or passed as the credential argument to the client constructor
     sas_url = f"{blob_client.url}?{sas_token}"
-
     # Create a BlobClient object with SAS authorization
     blob_client_sas = blob_client.from_blob_url(blob_url=sas_url)
     return blob_client_sas.url
@@ -122,18 +120,19 @@ def upload_file():
    print('Request for upload page received')
    f = request.files['file']
    search_for = request.form['search-string']
-   file_urls = upload_blob(f)
+   file_urls, result_filename = upload_blob(f)
    print('file uploaded successfully')
    queue_content = file_urls
    queue_content.append(search_for)
    queue(queue_content)
    print('Sent to queue')
-   return render_template('results.html', name=f.filename, text=search_for)
+   return render_template('results.html', name=f.filename, text=search_for, filename=result_filename)
 
-@app.route('/results', methods = ['GET'])
-def link_to_file():
+@app.route('/results/<filename>', methods = ['GET'])
+def link_to_file(filename):
     print("Test")
-    link = get_sas_url()
+    print(filename)
+    link = get_sas_url(filename)
     return redirect(link)
 
 if __name__ == '__main__':

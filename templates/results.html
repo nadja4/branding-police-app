@@ -14,7 +14,9 @@
             <p class="form-label fw-bold fs-5">Die PowerPoint Datei "{{name}}" wird nach dem Text "{{text}}"
                 durchsucht.
             </p>
-            <a href="{{ url_for('link_to_file') }}" class="btn btn-primary btn-lg px-4 gap-3">Ergebnisse ansehen</a>
+            <a href="{{ url_for('link_to_file', filename=filename) }}"
+                class="btn btn-primary btn-lg px-4 gap-3">Ergebnisse
+                ansehen</a>
         </div>
         <div class="px-4 py-3 my-2 text-center">
             <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-4 gap-3">Zurück zum Start</a>
