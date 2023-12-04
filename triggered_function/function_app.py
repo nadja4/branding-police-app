@@ -5,12 +5,11 @@ import logging
 import json
 import os
 from pptx import Presentation
+import tempfile
 
 from dotenv import load_dotenv
 
 load_dotenv()
-
-app = func.FunctionApp()
 
 credentials = DefaultAzureCredential()
 
@@ -32,17 +31,18 @@ def update_result_txt(results_def, results):
 
    # Upload results_xx.txt
    results_filename = results_def[2]
-   results_f = open(results_filename, "w")
+   path = os.path.join(tempfile.gettempdir(), results_filename)
+   results_f = open(path, "w")
    for element in results:
        results_f.write(element)
    results_f.close()
 
    #open and read the file after the overwriting:
-   results_f = open(results_filename, "r")
+   results_f = open(path, "r")
    data = results_f.read()
    container_client.upload_blob(name=results_filename, data=data, overwrite=True)
    results_f.close()
-   os.remove(results_filename)
+   os.remove(path)
 
 def analyze_powerpoint(powerpoint_def, search_string):
     # Read powerpoint data
@@ -51,12 +51,14 @@ def analyze_powerpoint(powerpoint_def, search_string):
 
     # download blob data 
     blob_client = container_client.get_blob_client(blob= powerpoint_def[2])
-    with open(file=os.path.join(r'.', powerpoint_def[2]), mode="wb") as sample_blob:
+    path = os.path.join(tempfile.gettempdir(), powerpoint_def[2])
+    print(path)
+    with open(path, mode="wb") as sample_blob:
         download_stream = blob_client.download_blob()
         sample_blob.write(download_stream.readall())
 
     # Search for String in Powerpoint 
-    presentation = Presentation(powerpoint_def[2])
+    presentation = Presentation(path)
 
     header = "Searched for " + search_string + " in " + powerpoint_def[2] + "\n" + "\n"
     results = [header] 
@@ -77,7 +79,7 @@ def analyze_powerpoint(powerpoint_def, search_string):
     if len(results) == 1:
         results.append("String not found in Powerpoint")
     # Remove powerpoint from blob storage
-    os.remove(powerpoint_def[2])
+    os.remove(path)
     blob_client.delete_blob()
     return results
     
@@ -94,6 +96,7 @@ def handle_message(message):
     # Update results
     update_result_txt(results_def, results)
 
+app = func.FunctionApp()
 
 @app.queue_trigger(arg_name="azqueue", queue_name="queue-branding-police-app",
                                connection="QueueConnectionString") 
