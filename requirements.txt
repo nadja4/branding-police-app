@@ -1,5 +1,4 @@
 Flask==2.2.2
-flask[async]
 Werkzeug==2.3.7
 gunicorn
 azure-identity

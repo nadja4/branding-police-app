@@ -2,9 +2,9 @@ import os
 
 from flask import (Flask, redirect, render_template, request,
                    send_from_directory, url_for)
-import asyncio
+
 from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions, BlobClient
+from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 from azure.storage.queue import QueueServiceClient, BinaryBase64EncodePolicy, BinaryBase64DecodePolicy
 from datetime import datetime, timedelta, timezone
 
@@ -31,8 +31,6 @@ def upload_blob(file):
    # Upload power point file to storage
    data = file.read()
    blob_client = container_client.upload_blob(name=file.filename, data=data, overwrite=True)
-   blob_properties = blob_client.get_blob_properties()
-   upload_time = blob_properties['last_modified']
    file_urls = [blob_client.url]
 
    # Upload results_xx.txt
@@ -48,7 +46,7 @@ def upload_blob(file):
    file_urls.append(blob_client.url)
    results_f.close()
    os.remove(results_filename)
-   return file_urls, results_filename, upload_time
+   return file_urls, results_filename
 
 def request_user_delegation_key(blob_service_client, start_time, expiry_time):
     return blob_service_client.get_user_delegation_key(key_start_time=start_time,key_expiry_time=expiry_time)
@@ -73,26 +71,6 @@ def create_user_delegation_sas_blob(blob_service_client, blob_client):
 
     return sas_token
 
-## TODO:
-async def check_for_updates(link, upload_time):
-    print("Entered check for updates")
-    blob_client = BlobClient.from_blob_url(link)
-
-    modified = False
-    # Überprüfe, ob der Blob existiert
-    if blob_client.exists():
-
-        # Holen Sie die Metadaten des Blobs
-        blob_properties = blob_client.get_blob_properties()
-
-        # Extrahiere den letzten Änderungszeitpunkt (last modified time) aus den Metadaten
-        last_modified_time = blob_properties['last_modified']
-
-        if last_modified_time > upload_time:
-            print("modified")
-            return True
-    await asyncio.sleep(1)
-
 def get_sas_url(filename):
     # set client to access azure storage container
     blob_service_client = BlobServiceClient(account_url=account_url_blob, credential=credentials)
@@ -104,7 +82,6 @@ def get_sas_url(filename):
     sas_url = f"{blob_client.url}?{sas_token}"
     # Create a BlobClient object with SAS authorization
     blob_client_sas = blob_client.from_blob_url(blob_url=sas_url)
-
     return blob_client_sas.url
 
 def queue(queue_content):
@@ -139,21 +116,22 @@ def favicon():
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/results', methods = ['POST'])
-async def upload_file():
+def upload_file():
    print('Request for upload page received')
    f = request.files['file']
    search_for = request.form['search-string']
-   file_urls, result_filename, upload_time = upload_blob(f)
+   file_urls, result_filename = upload_blob(f)
    print('file uploaded successfully')
    queue_content = file_urls
    queue_content.append(search_for)
    queue(queue_content)
    print('Sent to queue')
-   await check_for_updates(get_sas_url(result_filename), upload_time)
    return render_template('results.html', name=f.filename, text=search_for, filename=result_filename)
 
 @app.route('/results/<filename>', methods = ['GET'])
 def link_to_file(filename):
+    print("Test")
+    print(filename)
     link = get_sas_url(filename)
     return redirect(link)
 
