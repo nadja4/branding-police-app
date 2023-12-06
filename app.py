@@ -126,14 +126,8 @@ def upload_file():
    queue_content.append(search_for)
    queue(queue_content)
    print('Sent to queue')
-   return render_template('results.html', name=f.filename, text=search_for, filename=result_filename)
-
-@app.route('/results/<filename>', methods = ['GET'])
-def link_to_file(filename):
-    print("Test")
-    print(filename)
-    link = get_sas_url(filename)
-    return redirect(link)
+   link = get_sas_url(result_filename)
+   return render_template('results.html', name=f.filename, text=search_for, filename=result_filename, sas_url=link)
 
 if __name__ == '__main__':
    app.run()
