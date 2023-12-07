@@ -47,12 +47,14 @@
             <p class="form-label fw-bold fs-5">Die PowerPoint Datei "{{name}}" wird nach dem Text "{{text}}"
                 durchsucht.
             </p>
-        </div>
+            <p class="form-label fw-bold fs-5" id="data"> </p>
+            <br>
+            <p class="form-label fw-bold fs-5">Link zur Datei:</p>
+        </div> 
         <div class="px-4 py-3 my-2 text-center" id="container">
             <input type="text" value="{{sas_url}}" id="myLink" readonly>
             <button id="close-image" onclick="copyLink()"><img
                     src="{{ url_for('static', filename='images/copy.svg') }}"></button>
-
 
             <script>
                 function copyLink() {
@@ -67,7 +69,7 @@
                     // Automatisches Ausblenden nach einigen Sekunden
                     setTimeout(function () {
                         info.style.display = 'none';
-                    }, 1000); // 5000 Millisekunden = 5 Sekunden
+                    }, 2000); // 5000 Millisekunden = 5 Sekunden
                 }
             </script>
         </div>
@@ -77,6 +79,31 @@
             <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-4 gap-3">Zurück zum Start</a>
         </div>
         <div id="info"></div>
+        <script>
+            function fetchDataAndUpdate() {
+                // Rufen Sie die Flask-Route '/update_data' auf
+                fetch('/update_data')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Aktualisieren Sie den Inhalt mit den empfangenen Daten
+                        const dataElement = document.getElementById('data');
+                        dataElement.innerText = "Status: " + data.result;
+                        if (data.success == "true") {
+                            dataElement.className = 'form-label fw-bold fs-5 bg-success text-white';
+                        } 
+                        else {
+                            dataElement.className = 'form-label fw-bold fs-5';
+                        }
+                    })
+                    .catch(error => console.error('Fehler beim Aktualisieren der Daten:', error));
+            }
+
+            // Führen Sie fetchDataAndUpdate beim Laden der Seite aus
+            fetchDataAndUpdate();
+
+            // Führen Sie fetchDataAndUpdate alle 5 Sekunden aus
+            setInterval(fetchDataAndUpdate, 5000);
+        </script>
     </main>
 </body>
 
