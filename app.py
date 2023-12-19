@@ -39,10 +39,13 @@ CORS(app)  # Fügen Sie CORS zur App hinzu
 
 @app.after_request
 def add_security_headers(response):
-    # Setzen Sie die Content-Security-Policy-Header entsprechend Ihrer Anforderungen
+    # Generieren Sie einen zufälligen Nonce-Wert für jeden Request
+    nonce_value = os.urandom(16).hex()
+
+    # Setzen Sie die Content-Security-Policy-Header mit Nonce-Wert
     response.headers[
         "Content-Security-Policy"
-    ] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
+    ] = f"default-src 'self'; script-src 'self' 'nonce-{nonce_value}'; style-src 'self' 'nonce-{nonce_value}'"
     return response
 
 
