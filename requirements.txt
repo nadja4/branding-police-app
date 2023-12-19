@@ -5,3 +5,4 @@ azure-identity
 azure-storage-blob
 azure-storage-queue
 python-dotenv
+flask-cors

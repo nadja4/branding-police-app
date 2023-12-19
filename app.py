@@ -10,6 +10,8 @@ from flask import (
     jsonify,
 )
 
+from flask_cors import CORS
+
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import (
     BlobServiceClient,
@@ -32,6 +34,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)  # Fügen Sie CORS zur App hinzu
+
+
+@app.after_request
+def add_security_headers(response):
+    # Setzen Sie die Content-Security-Policy-Header entsprechend Ihrer Anforderungen
+    response.headers[
+        "Content-Security-Policy"
+    ] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
+    return response
+
 
 account_name = "sabrandingpoliceapp"
 account_url_blob = "https://sabrandingpoliceapp.blob.core.windows.net/"
