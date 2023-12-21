@@ -2,17 +2,16 @@ import os
 
 from flask import (
     Flask,
-    redirect,
     render_template,
     request,
     send_from_directory,
-    url_for,
     jsonify,
 )
 
 from flask_cors import CORS
 
 from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import (
     BlobServiceClient,
     generate_blob_sas,
@@ -26,12 +25,7 @@ from azure.storage.queue import (
 )
 from datetime import datetime, timedelta, timezone
 
-import time
 import json
-
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__)
 CORS(app)  # Fügen Sie CORS zur App hinzu
@@ -45,15 +39,19 @@ def add_security_headers(response):
     ] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
     return response
 
-
-account_name = "sabrandingpoliceapp"
-account_url_blob = "https://sabrandingpoliceapp.blob.core.windows.net/"
-container_name = "container-branding-police-app"
-account_url_queue = "https://sabrandingpoliceapp.queue.core.windows.net/"
-queue_name = "queue-branding-police-app"
-
 credentials = DefaultAzureCredential()
 
+# Abrufen der URL des Key Vaults aus den Default Credentials
+vault_url = os.environ["AZURE_VAULT_URL"]
+
+# Erstellen des SecretClient mit der ermittelten Vault-URL und Default Credentials
+secret_client = SecretClient(vault_url=vault_url, credential=credentials)
+
+account_name = secret_client.get_secret("StorageAccountName").value
+account_url_blob = secret_client.get_secret("AccoutUrlBlob").value
+container_name = secret_client.get_secret("StorageContainerName").value
+queue_name = secret_client.get_secret("StorageQueueName").value
+account_url_queue = secret_client.get_secret("StorageQueueUrl").value
 
 def upload_blob(file):
     blob_service_client = BlobServiceClient(
