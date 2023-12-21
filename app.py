@@ -28,23 +28,13 @@ from datetime import datetime, timedelta, timezone
 import json
 
 app = Flask(__name__)
-CORS(app)  # Fügen Sie CORS zur App hinzu
-
-
-@app.after_request
-def add_security_headers(response):
-    # Setzen Sie die Content-Security-Policy-Header entsprechend Ihrer Anforderungen
-    response.headers[
-        "Content-Security-Policy"
-    ] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
-    return response
 
 credentials = DefaultAzureCredential()
 
-# Abrufen der URL des Key Vaults aus den Default Credentials
+# Get the key vault url from env (locally) or application strings (in Azure)
 vault_url = os.environ["AZURE_VAULT_URL"]
 
-# Erstellen des SecretClient mit der ermittelten Vault-URL und Default Credentials
+# Create secret_client to get or set secrets in key vault
 secret_client = SecretClient(vault_url=vault_url, credential=credentials)
 
 account_name = secret_client.get_secret("StorageAccountName").value
