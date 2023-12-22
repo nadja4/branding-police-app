@@ -3,39 +3,7 @@
 <head>
     <title>Branding Police App - Suchergebnisse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
-    <style>
-        #container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #info {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background-color: #0b5ed7;
-            color: white;
-            padding: 15px;
-            display: none;
-        }
-
-        #close-image img {
-            width: 100%;
-            height: 30px;
-        }
-
-        #close-image button {
-            height: 35px;
-            border: none;
-        }
-
-        #myLink {
-            width: calc(80% - 20px);
-            height: 35px;
-            margin-right: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dynamic_styles.css') }}">
 </head>
 <html>
 
@@ -53,25 +21,10 @@
         </div> 
         <div class="px-4 py-3 my-2 text-center" id="container">
             <input type="text" value="{{sas_url}}" id="myLink" readonly>
-            <button id="close-image" onclick="copyLink()"><img
-                    src="{{ url_for('static', filename='images/copy.svg') }}"></button>
-
-            <script>
-                function copyLink() {
-                    var linkInput = document.getElementById('myLink');
-                    linkInput.select();
-                    document.execCommand('copy');
-
-                    var info = document.getElementById('info');
-                    info.innerHTML = 'Link wurde kopiert: ' + linkInput.value;
-                    info.style.display = 'block';
-
-                    // Automatisches Ausblenden nach einigen Sekunden
-                    setTimeout(function () {
-                        info.style.display = 'none';
-                    }, 2000); // 5000 Millisekunden = 5 Sekunden
-                }
-            </script>
+           
+            <button id="copyLinkBtn" data-url="{{ dynamic_url }}"><img
+                src="{{ url_for('static', filename='images/copy.svg') }}"></button> 
+            <script src="{{ url_for('static', filename='scripts/copyLink.js') }}"></script>
         </div>
         <div class="px-4 py-3 my-2 text-center">
             <a href="{{sas_url}}" class="btn btn-primary btn-lg px-4 gap-3">Ergebnisse
@@ -79,31 +32,7 @@
             <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-4 gap-3">Zurück zum Start</a>
         </div>
         <div id="info"></div>
-        <script>
-            function fetchDataAndUpdate() {
-                // Rufen Sie die Flask-Route '/update_data' auf
-                fetch('/update_data')
-                    .then(response => response.json())
-                    .then(data => {
-                        // Aktualisieren Sie den Inhalt mit den empfangenen Daten
-                        const dataElement = document.getElementById('data');
-                        dataElement.innerText = "Status: " + data.result;
-                        if (data.success == "true") {
-                            dataElement.className = 'form-label fw-bold fs-5 bg-success text-white';
-                        } 
-                        else {
-                            dataElement.className = 'form-label fw-bold fs-5';
-                        }
-                    })
-                    .catch(error => console.error('Fehler beim Aktualisieren der Daten:', error));
-            }
-
-            // Führen Sie fetchDataAndUpdate beim Laden der Seite aus
-            fetchDataAndUpdate();
-
-            // Führen Sie fetchDataAndUpdate alle 5 Sekunden aus
-            setInterval(fetchDataAndUpdate, 5000);
-        </script>
+        <script src="{{ url_for('static', filename='scripts/fetchDataAndUpdate.js') }}"></script>
     </main>
 </body>
 

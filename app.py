@@ -6,6 +6,7 @@ from flask import (
     request,
     send_from_directory,
     jsonify,
+    g
 )
 
 from flask_cors import CORS
@@ -173,7 +174,11 @@ def check_for_updates(upload_time, link):
             return "Die Suche ist abgeschlossen. Die Datei wurde aktualisiert.", "true"
         else:
             return "Die Suche läuft.", "false"
-
+        
+@app.after_request
+def add_security_headers(resp):
+    resp.headers['Content-Security-Policy']=f"default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; base-uri 'self'; form-action 'self'; object-src 'self' data:; frame-ancestors 'none'"
+    return resp
 
 @app.route("/")
 def index():
