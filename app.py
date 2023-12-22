@@ -5,8 +5,7 @@ from flask import (
     render_template,
     request,
     send_from_directory,
-    jsonify,
-    g
+    jsonify
 )
 
 from flask_cors import CORS
