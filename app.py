@@ -8,8 +8,6 @@ from flask import (
     jsonify
 )
 
-from flask_cors import CORS
-
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import (
@@ -137,14 +135,16 @@ def queue(queue_content):
     queue_client.message_encode_policy = BinaryBase64EncodePolicy()
     queue_client.message_decode_policy = BinaryBase64DecodePolicy()
 
+    # Convert queue_content to JSON format
     message = {
         "search-string": queue_content[2],
         "results_url": queue_content[1],
         "powerpoint_url": queue_content[0],
     }
-
     message_string = json.dumps(message)
     message_bytes = message_string.encode("utf-8")
+    
+    # Send message to queue
     queue_client.send_message(
         queue_client.message_encode_policy.encode(content=message_bytes)
     )
@@ -198,10 +198,13 @@ def favicon():
 def upload_file():
     global upload_time, link
     print("Request for upload page received")
+    # Get data from html/website
     f = request.files["file"]
     search_for = request.form["search-string"]
+    # Upload powerpoint to blob storage
     file_urls, result_filename, upload_time = upload_blob(f)
     print("File uploaded successfully to blob storage")
+    # Collect content for the queue message
     queue_content = file_urls
     queue_content.append(search_for)
     queue(queue_content)

@@ -1,6 +1,7 @@
 import azure.functions as func
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
+from azure.keyvault.secrets import SecretClient
 import logging
 import json
 import os
@@ -12,8 +13,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+vault_url = os.environ["AZURE_VAULT_URL"]
+
 credentials = DefaultAzureCredential()
 
+# Create secret_client to get or set secrets in key vault
+secret_client = SecretClient(vault_url=vault_url, credential=credentials)
 
 def get_url_parts(url):
     # Ersetze '//' durch eine spezielle Zeichenfolge, die wahrscheinlich nicht im String vorhanden ist
@@ -123,10 +128,11 @@ app = func.FunctionApp()
 
 
 @app.queue_trigger(
-    arg_name="azqueue",
-    queue_name="queue-branding-police-app",
-    connection="QueueConnectionString",
+    arg_name=secret_client.get_secret("StorageQueueTriggerArgName").value,
+    queue_name = secret_client.get_secret("StorageQueueName").value,
+    connection=secret_client.get_secret("StorageQueueTriggerConnectionString")
 )
+
 def func_analyze_powerpoint_trigger(azqueue: func.QueueMessage):
     message = azqueue.get_body().decode("utf-8")
     logging.info("Python Queue trigger processed a message: %s", message)
